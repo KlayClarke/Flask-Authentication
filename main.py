@@ -58,11 +58,13 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         user = db.session.query(User).filter_by(email=email).first()
-        # print none if user not in db, print user if in db
-        print(user)
-        # search db for account matching email (remember email param must always be unique)
-        # once email is found in db - compared password (hashed) to password entered in field
-        # check_password_hash()
+        if user:
+            if check_password_hash(pwhash=user.password, password=password):
+                print('Access Granted')
+            else:
+                print('Access Denied')
+        else:
+            print('Email not associated with a user in our database!')
     return render_template("login.html")
 
 
