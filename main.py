@@ -57,8 +57,12 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        print(f'Email:{email}, Password:{password}')
-        return redirect(url_for('secrets'))
+        user = db.session.query(User).filter_by(email=email).first()
+        # print none if user not in db, print user if in db
+        print(user)
+        # search db for account matching email (remember email param must always be unique)
+        # once email is found in db - compared password (hashed) to password entered in field
+        # check_password_hash()
     return render_template("login.html")
 
 
