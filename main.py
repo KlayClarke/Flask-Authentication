@@ -57,8 +57,8 @@ def logout():
 
 @app.route('/download/<path:filename>', methods=['GET'])
 def download(filename):
-    return send_from_directory(directory='/Users/klayclarke/Desktop/python/Flask-Log-Authentication/static/files',
-                               filename=filename, as_attachment=True)
+    return send_from_directory(directory='static',
+                               filename=filename)
 
 
 if __name__ == "__main__":
