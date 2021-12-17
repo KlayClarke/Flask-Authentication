@@ -41,15 +41,24 @@ def home():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    error = None
     if request.method == 'POST':
-        hashed_password = generate_password_hash(password=request.form.get('password'),
-                                                 method='pbkdf2:sha256', salt_length=8)
-        new_user = User(name=request.form.get('name'),
-                        email=request.form.get('email'),
-                        password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('secrets'))
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = db.session.query(User).filter_by(email=email).first()
+        if user:
+            error = 'Account for this email already exists'
+            return render_template('register.html', error=error)
+        else:
+            hashed_password = generate_password_hash(password=request.form.get('password'),
+                                                     method='pbkdf2:sha256', salt_length=8)
+            new_user = User(name=request.form.get('name'),
+                            email=request.form.get('email'),
+                            password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Account created successfully')
+            return redirect(url_for('secrets', user_name=new_user.name))
     return render_template("register.html")
 
 
