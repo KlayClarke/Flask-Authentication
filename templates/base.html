@@ -16,9 +16,9 @@
   <a class="navbar-brand" href="/">Flask Authentication</a>
   <div class="collapse navbar-collapse">
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-      </li>
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link" href="{{ url_for('home') }}">Home</a>-->
+<!--      </li>-->
         {% if current_user.is_authenticated == False %}
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('login') }}">Login</a>
@@ -28,7 +28,9 @@
       </li>
         {% endif %}
 <li class="nav-item">
+        {% if current_user.is_authenticated == True %}
         <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+        {% endif %}
       </li>
     </ul>
 
