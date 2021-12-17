@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory
+from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory, send_file
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 
 app = Flask(__name__)
@@ -17,6 +17,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
+
 
 # Line below only required once, when creating DB.
 # db.create_all()
@@ -35,7 +36,7 @@ def register():
                         password=request.form.get('password'))
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('home'))
+        return render_template('secrets.html')
     return render_template("register.html")
 
 
@@ -54,9 +55,9 @@ def logout():
     pass
 
 
-@app.route('/download')
-def download():
-    pass
+@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    return send_file(filename_or_fp=filename, as_attachment=True)
 
 
 if __name__ == "__main__":
