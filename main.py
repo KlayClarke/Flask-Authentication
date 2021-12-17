@@ -55,6 +55,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -65,11 +66,10 @@ def login():
                 flash('Logged in successfully')
                 return redirect(url_for('secrets', user_name=user.name))
             else:
-                flash('Login attempt unsuccessful')
+                error = 'Invalid password'
         else:
-            flash('Email not in database')
-            return redirect(url_for('login'))
-    return render_template("login.html")
+            error = 'Invalid email'
+    return render_template("login.html", error=error)
 
 
 @app.route('/secrets/<user_name>')
