@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory, send_file
+from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 
 app = Flask(__name__)
@@ -55,9 +55,10 @@ def logout():
     pass
 
 
-@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+@app.route('/download/<path:filename>', methods=['GET'])
 def download(filename):
-    return send_file(filename_or_fp=filename, as_attachment=True)
+    return send_from_directory(directory='/Users/klayclarke/Desktop/python/Flask-Log-Authentication/static/files',
+                               filename=filename, as_attachment=True)
 
 
 if __name__ == "__main__":
