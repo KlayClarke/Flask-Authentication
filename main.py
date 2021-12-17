@@ -1,4 +1,5 @@
 import os
+import flask
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory
@@ -30,7 +31,7 @@ class User(UserMixin, db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.query.get(user_id)
 
 
 @app.route('/')
@@ -48,7 +49,7 @@ def register():
                         password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        return render_template('secrets.html')
+        return redirect(url_for('secrets'))
     return render_template("register.html")
 
 
@@ -60,29 +61,36 @@ def login():
         user = db.session.query(User).filter_by(email=email).first()
         if user:
             if check_password_hash(pwhash=user.password, password=password):
-                print('Access Granted')
+                login_user(user=user, remember=True)
+                flash('Logged in successfully')
+                return redirect(url_for('secrets', user_name=user.name))
             else:
-                print('Access Denied')
+                flash('Login attempt unsuccessful')
         else:
-            print('Email not associated with a user in our database!')
+            flash('Email not in database')
+            return redirect(url_for('login'))
     return render_template("login.html")
 
 
-@app.route('/secrets')
-def secrets():
-    return render_template("secrets.html")
+@app.route('/secrets/<user_name>')
+@login_required
+def secrets(user_name):
+    return render_template("secrets.html", user_name=user_name)
 
 
 @app.route('/logout')
+@login_required
 def logout():
     pass
 
 
 @app.route('/download/<path:filename>', methods=['GET'])
+@login_required
 def download(filename):
-    return send_from_directory(directory='static',
+    return send_from_directory(directory='static/files/',
                                filename=filename)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
